@@ -1,0 +1,56 @@
+name: Upload Icons to GCS
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "logos/**.svg"
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Detect added or changed SVGs
+        id: diff
+        run: |
+          FILES=$(git diff --diff-filter=ACM --name-only HEAD~1 HEAD -- 'logos/*.svg')
+          if [ -z "$FILES" ]; then
+            echo "No new or changed SVGs found."
+            echo "has_files=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "$FILES"
+            echo "has_files=true" >> "$GITHUB_OUTPUT"
+            echo "$FILES" > /tmp/changed_svgs.txt
+          fi
+
+      - name: Authenticate to Google Cloud
+        if: steps.diff.outputs.has_files == 'true'
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Set up Cloud SDK
+        if: steps.diff.outputs.has_files == 'true'
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Upload SVGs to GCS
+        if: steps.diff.outputs.has_files == 'true'
+        run: |
+          while IFS= read -r file; do
+            filename=$(basename "$file")
+            echo "Uploading $filename..."
+            gsutil -h "Cache-Control:public, max-age=86400" \
+              cp "$file" "gs://${{ secrets.GCS_BUCKET }}/connectors/$filename"
+          done < /tmp/changed_svgs.txt
+          echo "Done. Uploaded $(wc -l < /tmp/changed_svgs.txt | tr -d ' ') file(s)."
