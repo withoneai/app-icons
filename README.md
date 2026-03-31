@@ -17,6 +17,10 @@
   <a href="https://linkedin.com/company/withoneai"><strong>LinkedIn</strong></a>
 </p>
 
+<p align="center">
+  <a href="https://withone.ai/knowledge"><img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fapi.withone.ai%2Fopen%2Fcount%2Fplatforms" alt="platforms"></a>
+</p>
+
 ---
 
 ## About
@@ -31,7 +35,7 @@ logos/
   ├── github.svg
   ├── stripe.svg
   ├── shopify.svg
-  └── ... (237 icons)
+  └── ... (all icons)
 ```
 
 ## Naming Convention
