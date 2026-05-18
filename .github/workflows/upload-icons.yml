@@ -5,6 +5,12 @@ on:
     branches: [main]
     paths:
       - "logos/**.svg"
+  workflow_dispatch:
+    inputs:
+      files:
+        description: 'SVGs to upload — "all", or space-separated paths (e.g. logos/remove-bg.svg)'
+        required: false
+        default: all
 
 jobs:
   upload:
@@ -18,12 +24,48 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          # Full history so we can diff the whole push range (before..after),
+          # not just the tip commit.
+          fetch-depth: 0
 
-      - name: Detect added or changed SVGs
+      - name: Detect SVGs to upload
         id: diff
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.sha }}
+          DISPATCH_FILES: ${{ github.event.inputs.files }}
         run: |
-          FILES=$(git diff --diff-filter=ACM --name-only HEAD~1 HEAD -- 'logos/*.svg')
+          set -euo pipefail
+
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            if [ -z "${DISPATCH_FILES:-}" ] || [ "$DISPATCH_FILES" = "all" ]; then
+              FILES=$(find logos -type f -name '*.svg' | sort)
+            else
+              FILES=""
+              for f in $DISPATCH_FILES; do
+                if [ -f "$f" ]; then
+                  FILES=$(printf '%s\n%s' "$FILES" "$f")
+                else
+                  echo "::warning::Requested file not found, skipping: $f"
+                fi
+              done
+            fi
+          else
+            # Diff the entire push range so multi-commit pushes (rebase merges, PRs
+            # with >1 commit, an empty trailing commit) don't drop files. Falls back
+            # to HEAD~1..HEAD when `before` is missing/unreachable (e.g. force-push).
+            if [ -z "${BEFORE_SHA:-}" ] \
+               || [ "$BEFORE_SHA" = "0000000000000000000000000000000000000000" ] \
+               || ! git cat-file -e "${BEFORE_SHA}^{commit}" 2>/dev/null; then
+              RANGE_ARGS="$(git rev-parse HEAD~1) HEAD"
+            else
+              RANGE_ARGS="$BEFORE_SHA $AFTER_SHA"
+            fi
+            FILES=$(git diff --diff-filter=ACM --name-only $RANGE_ARGS -- 'logos/*.svg')
+          fi
+
+          FILES=$(printf '%s\n' "$FILES" | grep -v '^$' | sort -u || true)
           if [ -z "$FILES" ]; then
             echo "No new or changed SVGs found."
             echo "has_files=false" >> "$GITHUB_OUTPUT"
