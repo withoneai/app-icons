@@ -1,0 +1,15 @@
+<svg width="66" height="66" viewBox="0 0 66 66" fill="none" xmlns="http://www.w3.org/2000/svg">
+<circle cx="32.9183" cy="32.9183" r="32.9183" fill="#F5F5F5"/>
+<defs>
+<linearGradient id="payhip-gradient" y1="15" x2="30" y2="15" gradientUnits="userSpaceOnUse">
+<stop offset="0" stop-color="#3197d6"/>
+<stop offset="1" stop-color="#7e80e7"/>
+</linearGradient>
+</defs>
+<g transform="translate(15.92 15.92) scale(1.133)">
+<path fill="url(#payhip-gradient)" d="M4.62,0H30a0,0,0,0,1,0,0V25.38A4.62,4.62,0,0,1,25.38,30H9.23A9.23,9.23,0,0,1,0,20.77V4.62A4.62,4.62,0,0,1,4.62,0Z"/>
+<path fill="#fff" fill-opacity="0.5" d="M22.74,15.27a4.85,4.85,0,0,0,0-6.85h0a4.85,4.85,0,0,0-6.85,0L15,9.3l6.85,6.85Z"/>
+<rect fill="#fff" x="10.15" y="11.31" width="9.69" height="9.69" transform="translate(-7.03 15.34) rotate(-45)"/>
+<path fill="#fff" d="M14.11,8.41a4.85,4.85,0,0,0-6.85,6.85l.89.89L15,9.3Zm-2.54,3.74a.58.58,0,0,1-.58.58H8.72a.58.58,0,0,1-.58-.58V9.88a.58.58,0,0,1,.58-.58H11a.58.58,0,0,1,.58.58Z"/>
+</g>
+</svg>
