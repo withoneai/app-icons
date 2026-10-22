@@ -1,0 +1,8 @@
+<svg width="66" height="66" viewBox="0 0 66 66" fill="none" xmlns="http://www.w3.org/2000/svg">
+<circle cx="32.9183" cy="32.9183" r="32.9183" fill="#F5F5F5"/>
+<g transform="translate(13 13) scale(0.625000)">
+<rect x="2" y="2" width="60" height="60" rx="12" fill="#3b82f6"/>
+  <text x="32" y="45" font-family="'IBM Plex Mono','Menlo',monospace" font-weight="600"
+        font-size="40" text-anchor="middle" fill="#ffffff">S</text>
+</g>
+</svg>
